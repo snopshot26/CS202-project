@@ -1,0 +1,171 @@
+-- Phase 1: Hotel Management System Database Design
+-- Table to store information about hotels
+CREATE TABLE Hotel (
+    hotelID INT PRIMARY KEY IDENTITY(1,1),
+    hotelName VARCHAR(100) NOT NULL,
+    address VARCHAR(255) NOT NULL
+);
+
+-- Base User table to store common user information
+CREATE TABLE User (
+    userID INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phoneNumber VARCHAR(15) NOT NULL,
+    userType ENUM('guest', 'administrator', 'receptionist', 'housekeeping') NOT NULL
+);
+
+-- Guest-specific information table
+CREATE TABLE Guest (
+    guestID INT PRIMARY KEY,
+    loyaltyPoints INT DEFAULT 0,
+    FOREIGN KEY (guestID) REFERENCES User(userID)
+);
+
+-- Administrator-specific information table
+CREATE TABLE Administrator (
+    adminID INT PRIMARY KEY,
+    FOREIGN KEY (adminID) REFERENCES User(userID)
+);
+
+-- Receptionist-specific information table
+CREATE TABLE Receptionist (
+    receptionistID INT PRIMARY KEY,
+    workShift ENUM('morning', 'afternoon', 'night') NOT NULL,
+    FOREIGN KEY (receptionistID) REFERENCES User(userID)
+);
+
+-- Housekeeping-specific information table
+CREATE TABLE Housekeeping (
+    housekeepingID INT PRIMARY KEY,
+    assignedFloors VARCHAR(100) NOT NULL,
+    FOREIGN KEY (housekeepingID) REFERENCES User(userID)
+);
+
+-- Table to store room details, linked to a specific hotel
+CREATE TABLE Room (
+    roomID INT PRIMARY KEY IDENTITY(1,1),
+    hotelID INT NOT NULL,
+    roomNumber VARCHAR(10) NOT NULL,
+    roomType ENUM('single', 'double', 'suite', 'family') NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    status ENUM('available', 'booked', 'maintenance') NOT NULL,
+    FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID)
+);
+
+-- Table to store booking information
+CREATE TABLE Booking (
+    bookingID INT PRIMARY KEY IDENTITY(1,1),
+    guestID INT NOT NULL,
+    roomID INT NOT NULL,
+    checkInDate DATE NOT NULL,
+    checkOutDate DATE NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') NOT NULL,
+    paymentStatus ENUM('pending', 'completed') NOT NULL,
+    FOREIGN KEY (guestID) REFERENCES Guest(guestID),
+    FOREIGN KEY (roomID) REFERENCES Room(roomID)
+);
+
+-- Table to store housekeeping schedule details
+CREATE TABLE HousekeepingSchedule (
+    taskID INT PRIMARY KEY IDENTITY(1,1),
+    roomID INT NOT NULL,
+    assignedTo INT NOT NULL,
+    scheduledDate DATE NOT NULL,
+    status ENUM('pending', 'completed') NOT NULL,
+    FOREIGN KEY (roomID) REFERENCES Room(roomID),
+    FOREIGN KEY (assignedTo) REFERENCES Housekeeping(housekeepingID)
+);
+
+-- Table to track payments made by guests
+CREATE TABLE Payment (
+    paymentID INT PRIMARY KEY IDENTITY(1,1),
+    bookingID INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    paymentDate DATE NOT NULL,
+    paymentMethod ENUM('credit_card', 'debit_card', 'cash', 'online') NOT NULL,
+    FOREIGN KEY (bookingID) REFERENCES Booking(bookingID)
+);
+
+-- Table to store employee details and link employees to hotels
+CREATE TABLE Employee (
+    employeeID INT PRIMARY KEY IDENTITY(1,1),
+    hotelID INT NOT NULL,
+    userID INT NOT NULL,
+    role ENUM('receptionist', 'housekeeping', 'administrator') NOT NULL,
+    startDate DATE NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (hotelID) REFERENCES Hotel(hotelID),
+    FOREIGN KEY (userID) REFERENCES User(userID)
+);
+
+
+
+-- Insert statements for Hotel Management System tables
+
+-- Insert data into Hotel table
+INSERT INTO Hotel (hotelName, address) VALUES ('Grand Hotel', '123 Main St, Springfield');
+INSERT INTO Hotel (hotelName, address) VALUES ('Oceanview Resort', '456 Ocean Ave, Beachside');
+INSERT INTO Hotel (hotelName, address) VALUES ('Mountain Lodge', '789 Mountain Rd, Hilltown');
+INSERT INTO Hotel (hotelName, address) VALUES ('City Lights Hotel', '1010 Broadway, Metropolis');
+INSERT INTO Hotel (hotelName, address) VALUES ('Sunset Inn', '202 Sunset Blvd, Lakeside');
+
+-- Insert data into User table
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Alice Johnson', 'alice@example.com', '555-1234', 'guest');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Bob Smith', 'bob@example.com', '555-5678', 'administrator');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Charlie Brown', 'charlie@example.com', '555-8765', 'receptionist');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Daisy Green', 'daisy@example.com', '555-4321', 'housekeeping');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Eve Adams', 'eve@example.com', '555-9988', 'guest');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Frank White', 'frank@example.com', '555-1122', 'receptionist');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Grace Miller', 'grace@example.com', '555-3344', 'housekeeping');
+INSERT INTO User (name, email, phoneNumber, userType) VALUES ('Henry Lee', 'henry@example.com', '555-5566', 'administrator');
+
+-- Insert data into Guest table
+INSERT INTO Guest (guestID, loyaltyPoints, userID) VALUES (1, 200, 1);
+INSERT INTO Guest (guestID, loyaltyPoints, userID) VALUES (2, 150, 5);
+
+-- Insert data into Administrator table
+INSERT INTO Administrator (adminID, userID) VALUES (2, 2);
+INSERT INTO Administrator (adminID, userID) VALUES (8, 8);
+
+-- Insert data into Receptionist table
+INSERT INTO Receptionist (receptionistID, workShift, userID) VALUES (3, 'morning', 3);
+INSERT INTO Receptionist (receptionistID, workShift, userID) VALUES (6, 'night', 6);
+
+-- Insert data into Housekeeping table
+INSERT INTO Housekeeping (housekeepingID, assignedFloors, userID) VALUES (4, '1, 2', 4);
+INSERT INTO Housekeeping (housekeepingID, assignedFloors, userID) VALUES (7, '3, 4', 7);
+
+-- Insert data into Room table
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (1, '101', 'single', 100.00, 'available');
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (1, '102', 'double', 150.00, 'available');
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (2, '201', 'suite', 300.00, 'booked');
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (3, '301', 'family', 250.00, 'available');
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (4, '401', 'single', 120.00, 'maintenance');
+INSERT INTO Room (hotelID, roomNumber, roomType, price, status) VALUES (5, '501', 'double', 180.00, 'available');
+
+-- Insert data into Booking table
+INSERT INTO Booking (guestID, roomID, checkInDate, checkOutDate, status, paymentStatus) VALUES (1, 1, '2024-12-01', '2024-12-05', 'confirmed', 'pending');
+INSERT INTO Booking (guestID, roomID, checkInDate, checkOutDate, status, paymentStatus) VALUES (1, 2, '2024-12-10', '2024-12-15', 'pending', 'completed');
+INSERT INTO Booking (guestID, roomID, checkInDate, checkOutDate, status, paymentStatus) VALUES (2, 3, '2024-12-20', '2024-12-25', 'confirmed', 'pending');
+INSERT INTO Booking (guestID, roomID, checkInDate, checkOutDate, status, paymentStatus) VALUES (2, 4, '2024-12-28', '2025-01-02', 'pending', 'pending');
+
+-- Insert data into HousekeepingSchedule table
+INSERT INTO HousekeepingSchedule (roomID, assignedTo, scheduledDate, status) VALUES (1, 4, '2024-12-02', 'pending');
+INSERT INTO HousekeepingSchedule (roomID, assignedTo, scheduledDate, status) VALUES (2, 4, '2024-12-11', 'completed');
+INSERT INTO HousekeepingSchedule (roomID, assignedTo, scheduledDate, status) VALUES (3, 7, '2024-12-21', 'in_progress');
+INSERT INTO HousekeepingSchedule (roomID, assignedTo, scheduledDate, status) VALUES (4, 7, '2024-12-29', 'pending');
+
+-- Insert data into Payment table
+INSERT INTO Payment (bookingID, amount, paymentDate, paymentMethod) VALUES (1, 500.00, '2024-12-05', 'credit_card');
+INSERT INTO Payment (bookingID, amount, paymentDate, paymentMethod) VALUES (2, 750.00, '2024-12-15', 'cash');
+INSERT INTO Payment (bookingID, amount, paymentDate, paymentMethod) VALUES (3, 1200.00, '2024-12-25', 'debit_card');
+INSERT INTO Payment (bookingID, amount, paymentDate, paymentMethod) VALUES (4, 1350.00, '2025-01-02', 'online');
+
+-- Insert data into Employee table
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (1, 2, 'administrator', '2024-01-01', 50000.00);
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (1, 3, 'receptionist', '2024-01-15', 30000.00);
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (2, 4, 'housekeeping', '2024-02-01', 25000.00);
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (3, 6, 'receptionist', '2024-03-01', 31000.00);
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (4, 7, 'housekeeping', '2024-04-01', 26000.00);
+INSERT INTO Employee (hotelID, userID, role, startDate, salary) VALUES (5, 8, 'administrator', '2024-05-01', 52000.00);
