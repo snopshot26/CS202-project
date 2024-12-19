@@ -1,4 +1,7 @@
-// package org.example.viewmodel;
+package org.example.viewmodel;
+
+// import java.util.Date;
+// import java.util.List;
 
 // public class AdministratorMenuViewModel {
 //     private final DatabaseManager db;
