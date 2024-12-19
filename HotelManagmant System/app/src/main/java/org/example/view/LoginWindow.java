@@ -41,7 +41,7 @@ public class LoginWindow extends Application {
             } else {
                 errorLabel.setText("");
                 System.out.println("Login successful for: " + username);
-                new ReceptionistMenuView().start(primaryStage);
+                new GuestMenuView().start(primaryStage);
             }
         });
 
