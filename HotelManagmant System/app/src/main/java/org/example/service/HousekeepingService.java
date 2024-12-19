@@ -15,4 +15,15 @@ public class HousekeepingService {
     public List<Housekeeping> getAllHousekeepings(){
         return this.HousekeepingDAO.getAllHousekeepings();
     }
+
+    public void assignTask(HousekeepingTask task) {
+        this.housekeepingDAO.addTask(task);
+    }
+
+    public List<HousekeepingTask> getAllTasks() {
+        return this.housekeepingDAO.getAllTasks();
+    }
+
+}
+
 }

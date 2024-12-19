@@ -18,4 +18,12 @@ public class HousekeepingDAO {
             return session.createQuery("FROM Housekeeping",Housekeeping.class).list();
         }
     }
+
+    public List<HousekeepingTask> getAllTasks() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM HousekeepingTask", HousekeepingTask.class).list();
+        }
+    }
 }
+
+
