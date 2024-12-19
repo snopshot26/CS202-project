@@ -2,6 +2,7 @@ package org.example.view;
 
 import org.example.model.Booking;
 import org.example.model.Hotel;
+import org.example.model.Room;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -167,7 +168,7 @@ public class GuestMenuView extends Application {
                     }
                 }
             }
-        }
+        };
 
         hotelTable.addEventHandler(EventType.ROOT, eventHandler);
 
@@ -244,6 +245,10 @@ public class GuestMenuView extends Application {
         roomsStage.setScene(scene);
         hotelListStage.hide();
         roomsStage.show();
+    }
+
+    private void openPaymentUI(Stage hotelListStage, Room selectedRoom) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }
