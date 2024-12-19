@@ -20,5 +20,13 @@ public class BookingService {
     public void updateBooking(Booking booking) {
         this.bookingDAO.updateBooking(booking);
     }
+
+    public List<Booking> getGuestBookings(long guestId) {
+        return bookingDAO.getBookingsByGuestId(guestId);
+    }
+    
+    public void addBooking(Booking booking) {
+        bookingDAO.addBooking(booking);
+    }
     
 }

@@ -11,31 +11,41 @@ import java.util.List;
 public class BookingViewModel {
     private final BookingService bookingService;
     private final ObservableList<Booking> bookings;
+    private final long guestId;
 
-    public BookingViewModel() {
+    public BookingViewModel(long guestId) {
         this.bookingService = new BookingService();
         this.bookings = FXCollections.observableArrayList();
-        loadBookings();
+        this.guestId = guestId;
+        loadGuestBookings(this.guestId);
     }
 
-    // Загружаем все бронирования
-    public void loadBookings() {
-        List<Booking> allBookings = bookingService.getAllBookings();
+    public void loadGuestBookings(long guestId) {
+        List<Booking> guestBookings = bookingService.getGuestBookings(guestId);
         bookings.clear();
-        bookings.addAll(allBookings);
+        bookings.addAll(guestBookings);
     }
 
-    // Отмена бронирования
-    public void cancelBooking(Booking booking) {
+    public boolean cancelBooking(Booking booking) {
         if (booking != null) {
-            booking.setStatus(BookingStatus.CANCELED); // Устанавливаем статус "CANCELED"
-            // Здесь должна быть логика для сохранения в базе данных
+            if (!canCancelBooking(booking)) {
+                // Нельзя отменить
+                return false;
+            }
+            booking.setStatus(BookingStatus.CANCELED);
             bookingService.updateBooking(booking);
-            loadBookings(); // Обновляем список после отмены
+            loadGuestBookings(this.guestId);
+            return true;
         }
+        return false;
+    }
+
+    public boolean canCancelBooking(Booking booking) {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        return !booking.getCheckInDate().isBefore(today);
     }
 
     public ObservableList<Booking> getBookings() {
-        return bookings;
+        return this.bookings;
     }
 }

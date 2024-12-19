@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.example.config.HibernateUtil;
@@ -20,36 +21,43 @@ public class RoomDAO {
         }
     }
 
-    // public List<Room> getAvailableRooms() {
-    //     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-    //         return session.createQuery("FROM Room WHERE status = 'available'", Room.class).list();
-    //     }
-    // }
+    public List<Room> getRoomsByHotelId(long hotelId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Room r WHERE r.hotel.id = :hotelId", Room.class)
+                          .setParameter("hotelId", hotelId)
+                          .list();
+        }
+    }
 
-    // public void saveRoom(Room room) {
-    //     Transaction transaction = null;
-    //     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-    //         transaction = session.beginTransaction();
-    //         session.save(room);
-    //         transaction.commit();
-    //     } catch (Exception e) {
-    //         if (transaction != null) transaction.rollback();
-    //         throw e;
-    //     }
-    // }
+    public List<Room> getAvailableRooms(long hotelId, LocalDate checkIn, LocalDate checkOut) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // Находим занятые комнаты данного отеля на этот период
+            List<Long> occupiedRoomIds = session.createQuery(
+                "SELECT DISTINCT b.room.id FROM Booking b " +
+                "WHERE b.room.hotel.id = :hotelId " +
+                "AND b.status <> 'CANCELED' " +
+                "AND b.checkInDate < :checkOut " +
+                "AND b.checkOutDate > :checkIn", Long.class)
+                .setParameter("hotelId", hotelId)
+                .setParameter("checkIn", checkIn)
+                .setParameter("checkOut", checkOut)
+                .list();
 
-    // public void deleteRoom(Long roomId) {
-    //     Transaction transaction = null;
-    //     try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-    //         transaction = session.beginTransaction();
-    //         Room room = session.get(Room.class, roomId);
-    //         if (room != null) {
-    //             session.delete(room);
-    //         }
-    //         transaction.commit();
-    //     } catch (Exception e) {
-    //         if (transaction != null) transaction.rollback();
-    //         throw e;
-    //     }
-    // }
+            if (occupiedRoomIds.isEmpty()) {
+                // Нет занятых комнат, значит все комнаты отеля доступны
+                return session.createQuery("FROM Room r WHERE r.hotel.id = :hotelId", Room.class)
+                        .setParameter("hotelId", hotelId)
+                        .list();
+            }
+
+            // Возвращаем комнаты отеля, которые НЕ в списке занятых
+            return session.createQuery(
+                "FROM Room r " +
+                "WHERE r.hotel.id = :hotelId " +
+                "AND r.id NOT IN (:occupiedRoomIds)", Room.class)
+                .setParameter("hotelId", hotelId)
+                .setParameterList("occupiedRoomIds", occupiedRoomIds)
+                .list();
+        }
+    }
 }

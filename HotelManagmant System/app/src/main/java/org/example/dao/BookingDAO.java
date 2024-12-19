@@ -22,6 +22,14 @@ public class BookingDAO {
         }
     }
 
+    public List<Booking> getBookingsByGuestId(long guestId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Booking b WHERE b.guest.id = :guestId", Booking.class)
+                          .setParameter("guestId", guestId)
+                          .list();
+        }
+    }
+
     public void updateBooking(Booking booking) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -33,4 +41,19 @@ public class BookingDAO {
             e.printStackTrace();
         }
     }
+
+    public void addBooking(Booking booking) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.save(booking);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+    
 }

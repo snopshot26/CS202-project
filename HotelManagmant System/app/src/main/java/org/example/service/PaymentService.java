@@ -15,4 +15,9 @@ public class PaymentService {
     public List<Payment> getAllPayments(){
         return this.PaymentDAO.getAllPayments();
     }
+
+    public void addPayment(Payment payment) {
+        PaymentDAO.addPayment(payment);
+    }
+
 }

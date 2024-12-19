@@ -1,5 +1,6 @@
 package org.example.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.example.dao.HotelDAO;
@@ -14,5 +15,9 @@ public class HotelService {
 
     public List<Hotel> getAllHotels(){
         return this.HotelDAO.getAllHotels();
+    }
+
+    public List<Hotel> getAvailableHotels(LocalDate checkIn, LocalDate checkOut) {
+        return this.HotelDAO.getAvailableHotels(checkIn, checkOut); 
     }
 }

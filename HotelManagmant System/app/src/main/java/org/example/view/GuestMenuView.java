@@ -20,10 +20,10 @@ public class GuestMenuView {
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
         Button viewBookingsButton = new Button("View My Bookings");
-        viewBookingsButton.setOnAction(e -> new BookingView().show(stage));
+        viewBookingsButton.setOnAction(e -> new BookingListView(guestId).show(stage, guestId));
 
         Button addBookingButton = new Button("Add New Booking");
-        //addBookingButton.setOnAction(e -> new HotelListView().showHotelList(stage));
+        addBookingButton.setOnAction(e -> new HotelListView(guestId).show(stage, guestId));
 
         Button exitButton = new Button("Exit");
         exitButton.setOnAction(e -> stage.close());

@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.example.enums.PaymentMethod;
+import org.example.enums.PaymentStatus;
 
 @Entity
 public class Payment {
@@ -35,6 +36,10 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "paymentMethod", nullable = false)
     private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "paymentStatus", nullable = false)
+    private PaymentStatus paymentStatus;
 
     public Payment() {
         
@@ -87,6 +92,14 @@ public class Payment {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }
 
