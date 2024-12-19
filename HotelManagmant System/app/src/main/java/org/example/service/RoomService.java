@@ -15,4 +15,24 @@ public class RoomService {
     public List<Room> getAllRooms(){
         return this.roomDAO.getAllRooms();
     }
+
+    public void addRoom(Room room) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void addRoom(Room room) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void deleteRoom(long roomId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Room getRoomById(long roomId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void updateRoom(Room room) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

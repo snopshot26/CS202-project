@@ -15,4 +15,26 @@ public class HousekeepingScheduleService {
     public List<HousekeepingSchedule> getAllHousekeepingSchedules(){
         return this.HousekeepingScheduleDAO.getAllHousekeepingSchedules();
     }
+
+    public void addSchedule(HousekeepingSchedule schedule) {
+        this.housekeepingScheduleDAO.addSchedule(schedule);
+    }
+
+    public void modifySchedule(HousekeepingSchedule schedule) {
+        this.housekeepingScheduleDAO.updateSchedule(schedule);
+    }
+
+    public void deleteSchedule(long scheduleId) {
+        this.housekeepingScheduleDAO.deleteSchedule(scheduleId);
+    }
+
+    public HousekeepingSchedule getScheduleById(long scheduleId) {
+        return this.housekeepingScheduleDAO.getScheduleById(scheduleId);
+    }
+
+    public List<HousekeepingSchedule> getAllSchedules() {
+        return this.housekeepingScheduleDAO.getAllSchedules();
+    }
 }
+
+

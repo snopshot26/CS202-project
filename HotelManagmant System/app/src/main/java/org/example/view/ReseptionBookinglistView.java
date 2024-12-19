@@ -11,10 +11,10 @@ import org.example.model.Room;
 
 import javafx.scene.Scene;
 
-public class RoomBookingView {
+public class ReseptionBookinglistView {
     private final Stage stage;
 
-    public RoomBookingView(Stage stage) {
+    public ReseptionBookinglistView(Stage stage) {
         this.stage = stage;
     }
 

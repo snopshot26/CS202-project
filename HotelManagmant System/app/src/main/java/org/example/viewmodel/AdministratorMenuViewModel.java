@@ -1,28 +1,129 @@
 package org.example.viewmodel;
 
-// import java.util.Date;
-// import java.util.List;
+import org.example.model.Booking;
+import org.example.model.Receptionist;
+import org.example.model.Room;
+import org.example.model.HousekeepingTask;
+import org.example.service.BookingService;
+import org.example.service.ReceptionistService;
+import org.example.service.RoomService;
+import org.example.service.HousekeepingService;
 
-// public class AdministratorMenuViewModel {
-//     private final DatabaseManager db;
+import java.util.List;
 
-//     public AdministratorMenuViewModel(DatabaseManager db) {
-//         this.db = db;
-//     }
+public class AdministratorMenuViewModel {
+    private final RoomService roomService = new RoomService();
+    private final ReceptionistService receptionistService = new ReceptionistService();
+    private final BookingService bookingService = new BookingService();
+    private final HousekeepingService housekeepingService = new HousekeepingService();
 
-//     public boolean addRoom(String roomType, double price) {
-//         return db.addRoom(roomType, price);
-//     }
+    /**
+     * Получить список всех комнат.
+     *
+     * @return список комнат.
+     */
+    public List<Room> getAllRooms() {
+        return roomService.getAllRooms();
+    }
 
-//     public boolean deleteRoom(int roomID) {
-//         return db.deleteRoom(roomID);
-//     }
+    /**
+     * Добавить новую комнату.
+     *
+     * @param room номер комнаты.
+     */
+    public void addRoom(Room room) {
+        roomService.addRoom(room);
+    }
 
-//     public boolean updateRoomStatus(int roomID, String status) {
-//         return db.updateRoomStatus(roomID, status);
-//     }
+    /**
+     * Удалить комнату по ID.
+     *
+     * @param roomId ID комнаты.
+     */
+    public void deleteRoom(long roomId) {
+        roomService.deleteRoom(roomId);
+    }
 
-//     public List<String> getAllBookingRecords() {
-//         return db.viewAllBookingRecords();
-//     }
-// }
+    /**
+     * Обновить статус комнаты.
+     *
+     * @param roomId ID комнаты.
+     * @param status новый статус.
+     */
+    public void updateRoomStatus(long roomId, String status) {
+        Room room = roomService.getRoomById(roomId);
+        if (room != null) {
+            room.setStatus(status);
+            roomService.updateRoom(room);
+        }
+    }
+
+    /**
+     * Получить список всех пользователей (рецепционистов).
+     *
+     * @return список пользователей.
+     */
+    public List<Receptionist> getAllReceptionists() {
+        return receptionistService.getAllReceptionists();
+    }
+
+    /**
+     * Добавить нового рецепциониста.
+     *
+     * @param receptionist рецепционист.
+     */
+    public void addReceptionist(Receptionist receptionist) {
+        receptionistService.addReceptionist(receptionist);
+    }
+
+    /**
+     * Удалить рецепциониста по ID.
+     *
+     * @param receptionistId ID рецепциониста.
+     */
+    public void deleteReceptionist(long receptionistId) {
+        receptionistService.deleteReceptionist(receptionistId);
+    }
+
+    /**
+     * Получить список всех бронирований.
+     *
+     * @return список бронирований.
+     */
+    public List<Booking> getAllBookings() {
+        return bookingService.getAllBookings();
+    }
+
+    /**
+     * Получить список всех задач уборки.
+     *
+     * @return список задач уборки.
+     */
+    public List<HousekeepingTask> getAllHousekeepingTasks() {
+        return housekeepingService.getAllTasks();
+    }
+
+    /**
+     * Сгенерировать отчет по бронированиям.
+     *
+     * @return строка с отчетом.
+     */
+    public String generateBookingReport() {
+        List<Booking> bookings = bookingService.getAllBookings();
+        StringBuilder report = new StringBuilder("Booking Report:\n");
+        bookings.forEach(booking -> report.append(booking.toString()).append("\n"));
+        return report.toString();
+    }
+
+    /**
+     * Сгенерировать отчет по задачам уборки.
+     *
+     * @return строка с отчетом.
+     */
+    public String generateHousekeepingReport() {
+        List<HousekeepingTask> tasks = housekeepingService.getAllTasks();
+        StringBuilder report = new StringBuilder("Housekeeping Tasks Report:\n");
+        tasks.forEach(task -> report.append(task.toString()).append("\n"));
+        return report.toString();
+    }
+}

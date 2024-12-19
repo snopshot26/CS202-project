@@ -18,4 +18,26 @@ public class ReceptionistDAO {
             return session.createQuery("FROM Receptionist",Receptionist.class).list();
         }
     }
+
+    public void addReceptionist(Receptionist receptionist) {
+        this.receptionistDAO.addReceptionist(receptionist);
+    }
+
+    public void modifyReceptionist(Receptionist receptionist) {
+        this.receptionistDAO.updateReceptionist(receptionist);
+    }
+
+    public void deleteReceptionist(long receptionistId) {
+        this.receptionistDAO.deleteReceptionist(receptionistId);
+    }
+
+    public Receptionist getReceptionistById(long receptionistId) {
+        return this.receptionistDAO.getReceptionistById(receptionistId);
+    }
+
+    public List<Receptionist> getAllReceptionists() {
+        return this.receptionistDAO.getAllReceptionists();
+    }
+   
 }
+
