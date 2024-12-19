@@ -1,11 +1,19 @@
 package org.example.model;
 
-import javax.persistence.*;
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.example.enums.BookingStatus;
 import org.example.enums.PaymentStatus;
-
-import java.time.LocalDate;
 
 @Entity
 public class Booking {
@@ -14,6 +22,10 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookingID")
     private long Id;
+
+    @ManyToOne
+    @JoinColumn(name = "hotelID", referencedColumnName = "hotelID")
+    private Hotel hotel;  
 
     @ManyToOne
     @JoinColumn(name = "guestID", referencedColumnName = "userID")
@@ -37,12 +49,32 @@ public class Booking {
     @Column(name = "paymentStatus", nullable = false)
     private PaymentStatus paymentStatus;
 
+    public Booking() {}
+
+    public Booking(Hotel hotel,Guest guest, Room room, LocalDate checkInDate2, LocalDate checkOutDate2, BookingStatus status, PaymentStatus paymentStatus) {
+        this.hotel = hotel;
+        this.guest = guest;
+        this.room = room;
+        this.checkInDate = checkInDate2;
+        this.checkOutDate = checkOutDate2;
+        this.status = status;
+        this.paymentStatus = paymentStatus;
+    }
+    
     public long geId() {
         return this.Id;
     }
 
     public void setId(long bookingID) {
         this.Id = bookingID;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 
     public Guest getGuest() {

@@ -1,6 +1,14 @@
 package org.example.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.example.enums.RoomStatus;
 import org.example.enums.RoomType;
@@ -30,6 +38,19 @@ public class Room {
     @Enumerated(EnumType.STRING)
     @Column(name = "status",nullable = false)
     private RoomStatus status;
+
+
+    public Room() {
+    }
+
+    public Room(Hotel hotel, String roomNumber, RoomType roomType, double price, RoomStatus status) {
+        this.hotel = hotel;
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.price = price;
+        this.status = status;
+    }
+
 
     public long getId() {
         return this.Id;

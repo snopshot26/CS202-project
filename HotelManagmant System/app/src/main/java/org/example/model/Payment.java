@@ -1,8 +1,16 @@
 package org.example.model;
 
-import javax.persistence.*;
-
 import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.example.enums.PaymentMethod;
 
@@ -27,6 +35,18 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "paymentMethod", nullable = false)
     private PaymentMethod paymentMethod;
+
+    public Payment() {
+        
+    }
+
+    public Payment(Booking booking, double amount, LocalDate paymentDate, PaymentMethod paymentMethod) {
+        this.booking = booking;
+        this.amount = amount;
+        this.paymentDate = paymentDate;
+        this.paymentMethod = paymentMethod;
+    }
+
 
     // Getters and Setters
     public long getId() {

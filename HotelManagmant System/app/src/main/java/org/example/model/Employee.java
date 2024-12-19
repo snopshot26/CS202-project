@@ -1,10 +1,18 @@
 package org.example.model;
 
-import javax.persistence.*;
+import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.example.enums.EmployeeRole;
-
-import java.time.LocalDate;
 
 @Entity
 public class Employee {
@@ -31,6 +39,17 @@ public class Employee {
 
     @Column(name = "salary",nullable = false)
     private double salary;
+
+    public Employee() {
+    }
+    
+    public Employee(Hotel hotel, User user, EmployeeRole role, LocalDate startDate, double salary) {
+        this.hotel = hotel;
+        this.user = user;
+        this.role = role;
+        this.startDate = startDate;
+        this.salary = salary;
+    }
 
     // Getters and Setters
     public long getId() {

@@ -1,8 +1,16 @@
 package org.example.model;
 
-import javax.persistence.*;
-
 import java.time.LocalDate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.example.enums.HousekeepingStatus;
 
@@ -19,7 +27,7 @@ public class HousekeepingSchedule {
     private Room room; 
 
     @ManyToOne
-    @JoinColumn(name = "assignedTo", referencedColumnName = "housekeepingID")
+    @JoinColumn(name = "assignedTo", referencedColumnName = "userID")
     private Housekeeping housekeeping;
     
     @Column(name = "scheduledDate", nullable = false)
@@ -29,6 +37,17 @@ public class HousekeepingSchedule {
     @Column(name = "status", nullable = false)
     private HousekeepingStatus status;
 
+    public HousekeepingSchedule() {
+    }
+
+    public HousekeepingSchedule(Room room, Housekeeping housekeeping, LocalDate scheduledDate, HousekeepingStatus status) {
+        this.room = room;
+        this.housekeeping = housekeeping;
+        this.scheduledDate = scheduledDate;
+        this.status = status;
+    }
+
+    
     public long getId() {
         return this.Id;
     }

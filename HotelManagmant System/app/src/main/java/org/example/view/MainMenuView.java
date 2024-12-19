@@ -1,5 +1,6 @@
 package org.example.view;
 
+import org.example.config.DatabaseSeeder;
 import org.example.viewmodel.MainMenuViewModel;
 
 import javafx.application.Application;
@@ -86,6 +87,7 @@ public class MainMenuView extends Application {
 
     public static void main(String[] args) {
         launch(args);
+        DatabaseSeeder.run();
     }
 }
 

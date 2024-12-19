@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "Hotel")
 public class Hotel {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -18,6 +20,14 @@ public class Hotel {
     
     @Column(name = "address", nullable=false, length = 255)
     private String address;
+
+    public Hotel() {
+    }
+
+    public Hotel(String name, String address) {
+        this.Name = name;
+        this.address = address;
+    }
 
     public long getId(){
         return this.Id;

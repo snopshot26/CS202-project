@@ -1,6 +1,14 @@
 package org.example.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 import org.example.enums.UserType;
 
@@ -22,9 +30,24 @@ public class User {
     @Column(name = "phoneNumber", nullable = false, length = 15)
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)  // Указывает, что значение userType будет сохраняться как строка
+    @Column(name = "password", nullable = false, length = 50)
+    private String password;
+
+    @Enumerated(EnumType.STRING) 
     @Column(name = "userType",nullable = false)
     private UserType userType;
+
+    public User() {
+    }
+
+    public User(String name, String email, String phoneNumber, UserType userType,String password) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.userType = userType;
+        this.password = password;
+    }
+
 
     public Long getId() {
         return id;
@@ -64,5 +87,13 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

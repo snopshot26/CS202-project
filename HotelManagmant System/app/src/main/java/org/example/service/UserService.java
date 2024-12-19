@@ -1,10 +1,26 @@
-// package org.example.service;
+package org.example.service;
 
-// import org.example.factory.UserFactory;
+import java.util.List;
 
-// public class UserService {
+import org.example.dao.UserDAO;
+import org.example.factory.UserFactory;
+import org.example.model.User;
 
-//     public User registerUser(String role, String name, String email, String phoneNumber) {
-//         return UserFactory.createUser(role, name, email, phoneNumber);
-//     }
-// }
+public class UserService {
+
+    private final UserDAO userDAO = new UserDAO();
+
+    public User registerUser(String role, String name, String email, String phoneNumber) {
+        return UserFactory.createUser(role, name, email, phoneNumber);
+    }
+
+    public User getUser(long userId){
+        return this.userDAO.getUserById(userId);
+    }
+
+    public List<User> getAllUsers(){
+        return this.userDAO.getAllUsers();
+    }
+    
+
+}
