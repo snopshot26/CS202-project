@@ -1,9 +1,5 @@
 package org.example.view;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -18,6 +14,60 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ReceptionistMenuView {
+
+    private static class Room {
+        private final String roomID;
+        private double price;
+        private final String roomNumber;
+        private String roomType;
+        private String status;
+
+        public Room(String roomID, double price, String roomNumber, String roomType, String status) {
+            this.roomID = roomID;
+            this.price = price;
+            this.roomNumber = roomNumber;
+            this.roomType = roomType;
+            this.status = status;
+        }
+
+        @Override
+        public String toString() {
+            return roomNumber + " - " + roomType + " - $" + price + " - " + status;
+        }
+
+        public String getRoomID() {
+            return roomID;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+
+        public String getRoomNumber() {
+            return roomNumber;
+        }
+
+        public String getRoomType() {
+            return roomType;
+        }
+
+        public void setRoomType(String roomType) {
+            this.roomType = roomType;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+    }
+
     public void start(Stage mainStage) {
         Stage receptionistStage = new Stage();
 
@@ -33,16 +83,13 @@ public class ReceptionistMenuView {
         Button assignHousekeepingTaskButton = new Button("Assign Housekeeping Task");
         assignHousekeepingTaskButton.setOnAction(e -> showAssignHousekeepingTaskUI(receptionistStage));
 
-        Button viewHousekeepersButton = new Button("View All Housekeepers Records and Their Availability");
-        viewHousekeepersButton.setOnAction(e -> System.out.println("View All Housekeepers Records clicked."));
-
         Button backButton = new Button("Exit");
         backButton.setOnAction(e -> {
             receptionistStage.close();
             mainStage.show();
         });
 
-        VBox layout = new VBox(10, receptionistLabel, addBookingButton, viewBookingsButton, assignHousekeepingTaskButton, viewHousekeepersButton, backButton);
+        VBox layout = new VBox(10, receptionistLabel, addBookingButton, viewBookingsButton, assignHousekeepingTaskButton, backButton);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
         Scene scene = new Scene(layout, 400, 300);
@@ -58,43 +105,29 @@ public class ReceptionistMenuView {
         Label titleLabel = new Label("Room Booking");
         titleLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
 
-        ListView<String> roomListView = new ListView<>();
-        ObservableList<String> allRooms = FXCollections.observableArrayList("Room 101 - $100", "Room 102 - $150", "Room 103 - $200", "Room 104 - $120", "Room 105 - $90");
-        roomListView.setItems(allRooms);
+        ListView<Room> roomListView = new ListView<>();
+        ObservableList<Room> allRooms = FXCollections.observableArrayList(
+            new Room("101", 100, "Room 101", "Single", "Available"),
+            new Room("102", 150, "Room 102", "Double", "Booked"),
+            new Room("103", 200, "Room 103", "Suite", "Available"),
+            new Room("104", 120, "Room 104", "Family", "Maintenance"),
+            new Room("105", 90, "Room 105", "Single", "Available")
+        );
+        roomListView.setItems(allRooms.filtered(room -> "Available".equals(room.getStatus())));
 
-        Label dateFilterLabel = new Label("Filter by Dates (yyyy-mm-dd):");
-        TextField startDateField = new TextField();
-        startDateField.setPromptText("Start Date");
-        TextField endDateField = new TextField();
-        endDateField.setPromptText("End Date");
+        TextField filterField = new TextField();
+        filterField.setPromptText("Filter by Room Number");
+        filterField.textProperty().addListener((obs, oldText, newText) -> {
+            roomListView.setItems(allRooms.filtered(room -> room.getRoomNumber().contains(newText) && "Available".equals(room.getStatus())));
+        });
 
-        Label priceFilterLabel = new Label("Filter by Price:");
-        TextField minPriceField = new TextField();
-        minPriceField.setPromptText("Min Price");
-        TextField maxPriceField = new TextField();
-        maxPriceField.setPromptText("Max Price");
-
-        Button applyFilterButton = new Button("Apply Filter");
-        applyFilterButton.setOnAction(e -> {
-            try {
-                double minPrice = minPriceField.getText().isEmpty() ? 0 : Double.parseDouble(minPriceField.getText());
-                double maxPrice = maxPriceField.getText().isEmpty() ? Double.MAX_VALUE : Double.parseDouble(maxPriceField.getText());
-
-                LocalDate startDate = startDateField.getText().isEmpty() ? LocalDate.MIN : LocalDate.parse(startDateField.getText(), DateTimeFormatter.ISO_DATE);
-                LocalDate endDate = endDateField.getText().isEmpty() ? LocalDate.MAX : LocalDate.parse(endDateField.getText(), DateTimeFormatter.ISO_DATE);
-
-                ObservableList<String> filteredRooms = allRooms.filtered(room -> {
-                    String[] parts = room.split(" - \\$", 2);
-                    double price = Double.parseDouble(parts[1]);
-                    // Placeholder logic for dates; replace with actual room availability data
-                    return price >= minPrice && price <= maxPrice && !startDate.isAfter(endDate);
-                });
-
-                roomListView.setItems(filteredRooms);
-            } catch (NumberFormatException ex) {
-                System.out.println("Invalid price format.");
-            } catch (DateTimeParseException ex) {
-                System.out.println("Invalid date format.");
+        Button payButton = new Button("Pay");
+        payButton.setOnAction(e -> {
+            Room selectedRoom = roomListView.getSelectionModel().getSelectedItem();
+            if (selectedRoom != null) {
+                showPaymentUI(selectedRoom, roomBookingStage, receptionistStage);
+            } else {
+                System.out.println("No room selected for booking.");
             }
         });
 
@@ -104,23 +137,12 @@ public class ReceptionistMenuView {
             receptionistStage.show();
         });
 
-        Button payButton = new Button("Pay");
-        payButton.setOnAction(e -> {
-            String selectedRoom = roomListView.getSelectionModel().getSelectedItem();
-            if (selectedRoom != null) {
-                showPaymentUI(receptionistStage, roomBookingStage, selectedRoom);
-            } else {
-                System.out.println("No room selected.");
-            }
-        });
-
-        VBox filterLayout = new VBox(10, dateFilterLabel, startDateField, endDateField, priceFilterLabel, minPriceField, maxPriceField, applyFilterButton);
-        VBox layout = new VBox(10, titleLabel, filterLayout, roomListView, new HBox(10, backButton, payButton));
+        VBox layout = new VBox(10, titleLabel, filterField, roomListView, new HBox(10, payButton, backButton));
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
-        Scene scene = new Scene(layout, 500, 400);
-        roomBookingStage.setTitle("Room Booking");
+        Scene scene = new Scene(layout, 400, 400);
         roomBookingStage.setScene(scene);
+        roomBookingStage.setTitle("Room Booking");
         receptionistStage.hide();
         roomBookingStage.show();
     }
@@ -128,16 +150,42 @@ public class ReceptionistMenuView {
     private void showBookingListUI(Stage receptionistStage) {
         Stage bookingListStage = new Stage();
 
-        Label bookingListLabel = new Label("Booking List");
-        bookingListLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
+        Label titleLabel = new Label("Booking List");
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
 
-        ListView<String> bookingListView = new ListView<>();
-        ObservableList<String> bookings = FXCollections.observableArrayList(
-            "Room 101 - $100 - Booked, Unpaid",
-            "Room 102 - $150 - Booked, Paid",
-            "Room 103 - $200 - Booked, Unpaid"
+        ListView<Room> bookingListView = new ListView<>();
+        ObservableList<Room> bookings = FXCollections.observableArrayList(
+            new Room("201", 200, "Room 201", "Suite", "Booked"),
+            new Room("202", 150, "Room 202", "Double", "Available"),
+            new Room("203", 100, "Room 203", "Single", "Booked")
         );
         bookingListView.setItems(bookings);
+
+        TextField filterField = new TextField();
+        filterField.setPromptText("Filter by Room Number");
+        filterField.textProperty().addListener((obs, oldText, newText) -> {
+            bookingListView.setItems(bookings.filtered(room -> room.getRoomNumber().contains(newText)));
+        });
+
+        Button payButton = new Button("Pay");
+        payButton.setOnAction(e -> {
+            Room selectedRoom = bookingListView.getSelectionModel().getSelectedItem();
+            if (selectedRoom != null && "Booked".equals(selectedRoom.getStatus())) {
+                showPaymentUI(selectedRoom, bookingListStage, receptionistStage);
+            } else {
+                System.out.println("No valid booking selected for payment.");
+            }
+        });
+
+        Button modifyButton = new Button("Modify");
+        modifyButton.setOnAction(e -> {
+            Room selectedRoom = bookingListView.getSelectionModel().getSelectedItem();
+            if (selectedRoom != null) {
+                showRoomModificationUI(selectedRoom, bookingListStage, receptionistStage);
+            } else {
+                System.out.println("No room selected for modification.");
+            }
+        });
 
         Button backButton = new Button("Back");
         backButton.setOnAction(e -> {
@@ -145,63 +193,16 @@ public class ReceptionistMenuView {
             receptionistStage.show();
         });
 
-        Button payButton = new Button("Pay");
-        payButton.setOnAction(e -> {
-            String selectedBooking = bookingListView.getSelectionModel().getSelectedItem();
-            if (selectedBooking != null && selectedBooking.contains("Unpaid")) {
-                showPaymentUI(receptionistStage, bookingListStage, selectedBooking);
-            } else {
-                System.out.println("No unpaid booking selected.");
-            }
-        });
-
-        VBox layout = new VBox(10, bookingListLabel, bookingListView, new HBox(10, backButton, payButton));
+        VBox layout = new VBox(10, titleLabel, filterField, bookingListView, new HBox(10, payButton, modifyButton, backButton));
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
-        Scene scene = new Scene(layout, 500, 400);
-        bookingListStage.setTitle("Booking List");
+        Scene scene = new Scene(layout, 400, 400);
         bookingListStage.setScene(scene);
+        bookingListStage.setTitle("Booking List");
         receptionistStage.hide();
         bookingListStage.show();
     }
-
-    private void showAssignHousekeepingTaskUI(Stage receptionistStage) {
-        Stage housekeepingTaskStage = new Stage();
-
-        Label housekeepingLabel = new Label("Assign Housekeeping Task");
-        housekeepingLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
-
-        TextField roomField = new TextField();
-        roomField.setPromptText("Enter Room Number");
-
-        Button addTaskButton = new Button("Add Task");
-        addTaskButton.setOnAction(e -> {
-            String roomNumber = roomField.getText();
-            if (!roomNumber.isEmpty()) {
-                System.out.println("Housekeeping task added for room: " + roomNumber);
-                roomField.clear();
-            } else {
-                System.out.println("Room number cannot be empty.");
-            }
-        });
-
-        Button backButton = new Button("Back");
-        backButton.setOnAction(e -> {
-            housekeepingTaskStage.close();
-            receptionistStage.show();
-        });
-
-        VBox layout = new VBox(10, housekeepingLabel, roomField, new HBox(10, addTaskButton, backButton));
-        layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
-
-        Scene scene = new Scene(layout, 400, 200);
-        housekeepingTaskStage.setTitle("Assign Housekeeping Task");
-        housekeepingTaskStage.setScene(scene);
-        receptionistStage.hide();
-        housekeepingTaskStage.show();
-    }
-
-    private void showPaymentUI(Stage receptionistStage, Stage previousStage, String selectedRoom) {
+    private void showPaymentUI(Room selectedRoom, Stage previousStage, Stage receptionistStage) {
         Stage paymentStage = new Stage();
 
         Label paymentLabel = new Label("Payment");
@@ -249,5 +250,90 @@ public class ReceptionistMenuView {
         paymentStage.setScene(scene);
         previousStage.hide();
         paymentStage.show();
+    }
+
+    private void showRoomModificationUI(Room selectedRoom, Stage previousStage, Stage receptionistStage) {
+        Stage modificationStage = new Stage();
+
+        Label modificationLabel = new Label("Modify Room Details");
+        modificationLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
+
+        TextField priceField = new TextField(String.valueOf(selectedRoom.getPrice()));
+        priceField.setPromptText("Enter new price");
+
+        TextField typeField = new TextField(selectedRoom.getRoomType());
+        typeField.setPromptText("Enter new room type");
+
+        Button saveButton = new Button("Save Changes");
+        saveButton.setOnAction(e -> {
+            try {
+                double newPrice = Double.parseDouble(priceField.getText());
+                String newType = typeField.getText();
+
+                if (!newType.isEmpty()) {
+                    selectedRoom.setPrice(newPrice);
+                    selectedRoom.setRoomType(newType);
+                    System.out.println("Room details updated: " + selectedRoom);
+                } else {
+                    System.out.println("Room type cannot be empty.");
+                }
+
+                modificationStage.close();
+                previousStage.show();
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid price entered.");
+            }
+        });
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            modificationStage.close();
+            previousStage.show();
+        });
+
+        VBox layout = new VBox(10, modificationLabel, priceField, typeField, new HBox(10, saveButton, backButton));
+        layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+
+        Scene scene = new Scene(layout, 400, 300);
+        modificationStage.setScene(scene);
+        modificationStage.setTitle("Modify Room");
+        previousStage.hide();
+        modificationStage.show();
+    }
+
+    private void showAssignHousekeepingTaskUI(Stage receptionistStage) {
+        Stage housekeepingTaskStage = new Stage();
+
+        Label housekeepingLabel = new Label("Assign Housekeeping Task");
+        housekeepingLabel.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
+
+        TextField roomField = new TextField();
+        roomField.setPromptText("Enter Room Number");
+
+        Button addTaskButton = new Button("Add Task");
+        addTaskButton.setOnAction(e -> {
+            String roomNumber = roomField.getText();
+            if (!roomNumber.isEmpty()) {
+                System.out.println("Housekeeping task added for room: " + roomNumber);
+                roomField.clear();
+            } else {
+                System.out.println("Room number cannot be empty.");
+            }
+        });
+
+        Button backButton = new Button("Back");
+        backButton.setOnAction(e -> {
+            housekeepingTaskStage.close();
+            receptionistStage.show();
+        });
+
+        VBox layout = new VBox(10, housekeepingLabel, roomField, addTaskButton, backButton);
+        layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+
+        Scene scene = new Scene(layout, 400, 300);
+        housekeepingTaskStage.setTitle("Assign Housekeeping Task");
+        housekeepingTaskStage.setScene(scene);
+        receptionistStage.hide();
+        housekeepingTaskStage.show();
     }
 }

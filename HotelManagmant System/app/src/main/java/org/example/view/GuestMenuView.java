@@ -6,7 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class GuestMenuView {
+public class GuestMenuView{
     public void start(Stage mainStage) {
         Stage guestStage = new Stage();
 
