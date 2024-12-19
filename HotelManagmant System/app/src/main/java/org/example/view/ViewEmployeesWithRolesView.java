@@ -6,35 +6,34 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.example.model.Task;
+import org.example.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class HousekeepingMenuView {
+public class ViewEmployeesWithRolesView {
     private final Stage stage;
-    private final List<Task> tasks;
+    private final List<User> users;
 
-    public HousekeepingMenuView(Stage stage) {
+    public ViewEmployeesWithRolesView(Stage stage, List<User> users) {
         this.stage = stage;
-        this.tasks = new ArrayList<>(); // Replace with shared data source for tasks
+        this.users = users;
     }
 
     public void show() {
-        Label titleLabel = new Label("Housekeeping Menu");
+        Label titleLabel = new Label("View Employees with Their Roles");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
 
-        Button viewTasksButton = new Button("View Tasks");
-        viewTasksButton.setOnAction(e -> new ViewTasksView(stage, tasks).show());
+        ListView<String> employeeListView = new ListView<>();
+        users.forEach(user -> employeeListView.getItems().add(user.getUsername() + " - " + user.getRole()));
 
-        Button backButton = new Button("Back to Administrator Menu");
+        Button backButton = new Button("Back");
         backButton.setOnAction(e -> new AdministratorMenuView(stage).show());
 
-        VBox layout = new VBox(10, titleLabel, viewTasksButton, backButton);
+        VBox layout = new VBox(10, titleLabel, employeeListView, backButton);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
         Scene scene = stage.getScene();
         scene.setRoot(layout);
-        stage.setTitle("Housekeeping Menu");
+        stage.setTitle("View Employees with Their Roles");
     }
 }
