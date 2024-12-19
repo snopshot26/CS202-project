@@ -14,10 +14,9 @@ public class DatabaseSeeder {
             } else {
                 System.out.println("Database already has data. No need to insert test data.");
             }
-        } finally {
-            HibernateUtil.shutdown();
         }
     }
+    
 
     private static boolean isDatabaseEmpty(Session session) {
         String hql = "SELECT COUNT(*) FROM Hotel";

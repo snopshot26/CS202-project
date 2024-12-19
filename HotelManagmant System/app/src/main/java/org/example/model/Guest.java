@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import org.example.enums.UserType;
 
 @Entity
-@Table(name = "Guest")
+@Table(name = "guest")
 @PrimaryKeyJoinColumn(name = "userID")
 
 public class Guest extends User { 

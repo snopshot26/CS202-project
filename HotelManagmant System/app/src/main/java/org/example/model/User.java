@@ -1,6 +1,8 @@
 package org.example.model;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +17,7 @@ import org.example.enums.UserType;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "userType", discriminatorType = DiscriminatorType.STRING)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +36,8 @@ public class User {
     @Column(name = "password", nullable = false, length = 50)
     private String password;
 
-    @Enumerated(EnumType.STRING) 
-    @Column(name = "userType",nullable = false)
+    //@Enumerated(EnumType.STRING) 
+    @Column(name = "userType", insertable = false, updatable = false)
     private UserType userType;
 
     public User() {

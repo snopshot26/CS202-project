@@ -8,8 +8,8 @@ import org.example.model.Receptionist;
 public class UserFactory {
     
     public static User createUser(String role, String name, String email, String phoneNumber) {
-        User user = null;
-
+        User user;
+    
         if ("guest".equalsIgnoreCase(role)) {
             user = new Guest();
         } else if ("administrator".equalsIgnoreCase(role)) {
@@ -19,11 +19,11 @@ public class UserFactory {
         } else {
             throw new IllegalArgumentException("Unknown user role: " + role);
         }
-
+    
         user.setName(name);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
-
         return user;
     }
+    
 }

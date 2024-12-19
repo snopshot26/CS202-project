@@ -22,5 +22,7 @@ public class UserService {
         return this.userDAO.getAllUsers();
     }
     
-
+    public User getUserByEmailAndPassword(String password , String email){
+        return this.userDAO.getUserByEmailAndPassword(password, email);
+    }
 }

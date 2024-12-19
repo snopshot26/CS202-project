@@ -1,30 +1,35 @@
 package org.example.viewmodel;
 
-// import org.example.database.DatabaseManager;
-// import java.util.ArrayList;
-// import java.util.Date;
-// import java.util.List;
+import java.util.List;
 
-// public class GuestMenuViewModel {
-//     private final DatabaseManager db;
+import org.example.model.Booking;
+import org.example.service.BookingService;
+import org.example.service.GuestService;
 
-//     public GuestMenuViewModel(DatabaseManager db) {
-//         this.db = db;
-//     }
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-//     public boolean addBooking(int userID, int roomID, Date start, Date end) {
-//         return db.addNewBooking(userID, roomID, start, end);
-//     }
+public class GuestMenuViewModel {
+    private final GuestService guestService;
+    private final BookingService bookingService;
+    private final ObservableList<Booking> myBookings;
 
-//     public List<String> getAvailableRooms() {
-//         return db.viewAvailableRooms();
-//     }
+    public GuestMenuViewModel() {
+        this.guestService = new GuestService();
+        this.bookingService = new BookingService();
+        this.myBookings = FXCollections.observableArrayList();
+    }
 
-//     public List<String> getMyBookings(int userID) {
-//         return db.viewMyBookings(userID);
-//     }
+    public ObservableList<Booking> getMyBookings(Long guestId) {
+        List<Booking> bookings = bookingService.getAllBookings(); 
+        myBookings.clear();
 
-//     public boolean cancelBooking(int bookingID) {
-//         return db.cancelBooking(bookingID);
-//     }
-// }
+        // Фильтрация бронирований для конкретного гостя
+        for (Booking booking : bookings) {
+            if (booking.getGuest().getId() == guestId) {
+                myBookings.add(booking);
+            }
+        }
+        return myBookings;
+    }
+}
