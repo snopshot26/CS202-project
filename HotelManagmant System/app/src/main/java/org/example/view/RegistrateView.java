@@ -1,5 +1,9 @@
 package org.example.view;
 
+import org.example.enums.UserType;
+import org.example.viewmodel.LoginViewModel;
+import org.example.viewmodel.RegistrateViewModel;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,13 +15,25 @@ import javafx.stage.Stage;
 
 public class RegistrateView {
 
+    private final RegistrateViewModel viewModel;
+
+    public RegistrateView() {
+        this.viewModel = new RegistrateViewModel();
+    }
+
     public void showRegisterScene(Stage primaryStage) {
         // UI элементы
         Label titleLabel = new Label("Register New Account");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
 
+        Label nameLabel = new Label("Name:");
+        TextField nameField = new TextField();
+
         Label emailLabel = new Label("Email:");
         TextField emailField = new TextField();
+
+        Label phoneNumberLabel = new Label("Phone number:");
+        TextField phoneNumberField = new TextField();
 
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
@@ -36,8 +52,10 @@ public class RegistrateView {
             String email = emailField.getText();
             String password = passwordField.getText();
             String confirmPassword = confirmPasswordField.getText();
+            String name = nameField.getText();
+            String phoneNumber = phoneNumberField.getText();
 
-            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            if ( phoneNumber.isEmpty() || name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 errorLabel.setText("Fields cannot be empty.");
             } else if (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
                 errorLabel.setText("Invalid email format.");
@@ -48,6 +66,7 @@ public class RegistrateView {
             } else {
                 errorLabel.setText("");
                 System.out.println("Registration successful for: " + email);
+                viewModel.registrateUser(name, email, password, UserType.GUEST, phoneNumber);
                 new LoginView().showLoginScene(primaryStage);
             }
         });
@@ -55,7 +74,7 @@ public class RegistrateView {
         // Логика кнопки "Back"
         backButton.setOnAction(e -> new LoginView().showLoginScene(primaryStage));
 
-        VBox layout = new VBox(10, titleLabel, emailLabel, emailField, passwordLabel, passwordField,
+        VBox layout = new VBox(10, titleLabel,nameLabel,nameField, emailLabel, emailField,phoneNumberLabel,phoneNumberField, passwordLabel, passwordField,
                                confirmPasswordLabel, confirmPasswordField, errorLabel, submitButton, backButton);
         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 

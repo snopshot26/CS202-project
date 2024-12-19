@@ -25,4 +25,8 @@ public class UserService {
     public User getUserByEmailAndPassword(String password , String email){
         return this.userDAO.getUserByEmailAndPassword(password, email);
     }
+
+    public void addUser(User user) {
+        this.userDAO.addUser(user);
+    }
 }

@@ -7,22 +7,31 @@ public class HibernateUtil {
     private static final SessionFactory sessionFactory;
 
     static {
+        SessionFactory tempSessionFactory = null;
         try {
-            // Создаем SessionFactory из hibernate.cfg.xml
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+            tempSessionFactory = new Configuration()
+                    .configure("hibernate.cfg.xml")
+                    .buildSessionFactory();
+        } catch (org.hibernate.MappingException e) {
+            System.err.println("MappingException occurred: " + e.getMessage());
+            e.printStackTrace();
         } catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed." + ex);
-            throw new ExceptionInInitializerError(ex);
+            ex.printStackTrace();
+        } finally {
+            sessionFactory = tempSessionFactory;
         }
     }
+
 
     public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            throw new IllegalStateException("SessionFactory is not initialized.");
+        }
         return sessionFactory;
     }
-
+    
     public static void shutdown() {
-        if (sessionFactory != null) {
-            sessionFactory.close();
-        }
+        getSessionFactory().close();
     }
 }

@@ -1,5 +1,7 @@
 package org.example.view;
 
+import org.example.enums.UserType;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -49,8 +51,20 @@ public class LoginView {
                     errorLabel.setTextFill(Color.GREEN);
                     errorLabel.setText("Login successful!");
                     System.out.println("Login successful for: " + email);
-                    // Переход в главное меню или следующий экран
-                    new GuestMenuView().show(primaryStage,authenticatedUser.getId()); // Передаем ID пользователя
+                    switch (authenticatedUser.getUserType()) {
+                        case UserType.ADMINISTRATOR:
+                            break;
+                        case UserType.RECEPTIONIST:
+                            break;
+                        case UserType.GUEST:
+                            new GuestMenuView().show(primaryStage,authenticatedUser.getId());
+                            break;
+                        case UserType.HOUSEKEEPING:
+                            break;
+                        default:
+                            throw new AssertionError();
+                    }
+                    
                 } else {
                     errorLabel.setText("Invalid email or password.");
                 }

@@ -23,11 +23,12 @@ public class MainWindow extends Application {
 
     @Override
     public void stop() {
-        // Закрытие Hibernate SessionFactory
-        HibernateUtil.shutdown();
-        System.out.println("Hibernate SessionFactory закрыт.");
-
+        if (HibernateUtil.getSessionFactory().isOpen()) {
+            HibernateUtil.shutdown();
+            System.out.println("Hibernate SessionFactory закрыт.");
+        }
     }
+
     public static void main(String[] args) {
         launch(args);
     }
