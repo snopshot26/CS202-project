@@ -1,4 +1,9 @@
-// package org.example.viewmodel;
+package org.example.viewmodel;
+
+// import org.example.database.DatabaseManager;
+// import java.util.ArrayList;
+// import java.util.Date;
+// import java.util.List;
 
 // public class GuestMenuViewModel {
 //     private final DatabaseManager db;

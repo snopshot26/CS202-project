@@ -27,7 +27,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'org.example.view.MainMenuView'
+    mainClass = 'org.example.view.LoginWindow'
 }
 
 java {
