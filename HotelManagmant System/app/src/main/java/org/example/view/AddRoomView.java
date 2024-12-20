@@ -1,62 +1,100 @@
-// package org.example.view;
+package org.example.view;
 
-// import javafx.scene.Scene;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.Label;
-// import javafx.scene.control.TextField;
-// import javafx.scene.layout.VBox;
-// import javafx.stage.Stage;
-// import org.example.model.Room;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import org.example.enums.RoomType;
+import org.example.viewmodel.AddRoomViewModel;
 
-// import java.util.ArrayList;
-// import java.util.List;
+public class AddRoomView {
+    private final AddRoomViewModel viewModel;
 
-// public class AddRoomView {
-//     private final Stage stage;
-//     private final List<Room> rooms;
+    public AddRoomView() {
+        this.viewModel = new AddRoomViewModel();
+    }
 
-//     public AddRoomView(Stage stage) {
-//         this.stage = stage;
-//         this.rooms = new ArrayList<>(); // Replace with shared data source
-//     }
+    public void show(Stage stage, long adminId) {
+        stage.setTitle("Add New Room");
 
-//     public void show() {
-//         Label titleLabel = new Label("Add Room");
-//         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(20));
+        grid.setVgap(10);
+        grid.setHgap(10);
 
-//         TextField roomNumberField = new TextField();
-//         roomNumberField.setPromptText("Enter Room Number");
+        Label hotelLabel = new Label("Select Hotel:");
+        ComboBox<String> hotelComboBox = new ComboBox<>();
+        ObservableList<String> hotelNames = FXCollections.observableArrayList(viewModel.getHotelNames());
+        hotelComboBox.setItems(hotelNames);
+        hotelComboBox.setPromptText("Choose Hotel");
 
-//         TextField roomTypeField = new TextField();
-//         roomTypeField.setPromptText("Enter Room Type");
+        Label roomNumberLabel = new Label("Room Number:");
+        TextField roomNumberField = new TextField();
+        roomNumberField.setPromptText("e.g., 101");
 
-//         TextField priceField = new TextField();
-//         priceField.setPromptText("Enter Room Price");
+        Label roomTypeLabel = new Label("Room Type:");
+        ComboBox<RoomType> roomTypeComboBox = new ComboBox<>();
+        ObservableList<RoomType> roomTypes = FXCollections.observableArrayList(viewModel.getRoomTypes());
+        roomTypeComboBox.setItems(roomTypes);
+        roomTypeComboBox.setPromptText("Choose Room Type");
 
-//         Button addButton = new Button("Add Room");
-//         addButton.setOnAction(e -> {
-//             String roomNumber = roomNumberField.getText();
-//             String roomType = roomTypeField.getText();
-//             double price;
+        Label priceLabel = new Label("Price:");
+        TextField priceField = new TextField();
+        priceField.setPromptText("e.g., 150.00");
 
-//             try {
-//                 price = Double.parseDouble(priceField.getText());
-//                 Room newRoom = new Room(String.valueOf(rooms.size() + 1), roomNumber, roomType, price, "Available");
-//                 rooms.add(newRoom);
-//                 System.out.println("Room added: " + newRoom);
-//             } catch (NumberFormatException ex) {
-//                 System.out.println("Invalid price entered.");
-//             }
-//         });
+        Button addButton = new Button("Add Room");
+        addButton.setOnAction(e -> {
+            String hotelName = hotelComboBox.getValue();
+            String roomNumber = roomNumberField.getText().trim();
+            RoomType roomType = roomTypeComboBox.getValue();
+            String priceText = priceField.getText().trim();
 
-//         Button backButton = new Button("Back");
-//         backButton.setOnAction(e -> new AdministratorMenuView(stage).show());
+            if (hotelName == null || roomNumber.isEmpty() || roomType == null || priceText.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Incomplete Information", "Please fill in all fields.");
+                return;
+            }
 
-//         VBox layout = new VBox(10, titleLabel, roomNumberField, roomTypeField, priceField, addButton, backButton);
-//         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+            try {
+                double price = Double.parseDouble(priceText);
+                boolean success = viewModel.addRoom(hotelName, roomNumber, roomType, price);
+                if (success) {
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Room added successfully.");
+                    new AdministratorMenuView(adminId).show(stage);
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to add room. It might already exist.");
+                }
+            } catch (NumberFormatException ex) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Input", "Price must be a valid number.");
+            }
+        });
 
-//         Scene scene = stage.getScene();
-//         scene.setRoot(layout);
-//         stage.setTitle("Add Room");
-//     }
-// }
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(e -> new AdministratorMenuView(adminId).show(stage));
+
+        grid.add(hotelLabel, 0, 0);
+        grid.add(hotelComboBox, 1, 0);
+        grid.add(roomNumberLabel, 0, 1);
+        grid.add(roomNumberField, 1, 1);
+        grid.add(roomTypeLabel, 0, 2);
+        grid.add(roomTypeComboBox, 1, 2);
+        grid.add(priceLabel, 0, 3);
+        grid.add(priceField, 1, 3);
+        grid.add(addButton, 0, 4);
+        grid.add(cancelButton, 1, 4);
+
+        Scene scene = new Scene(grid, 400, 300);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}

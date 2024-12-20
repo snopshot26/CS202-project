@@ -1,54 +1,55 @@
-// package org.example.view;
+package org.example.view;
 
-// import javafx.scene.Scene;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.Label;
-// import javafx.scene.control.ListView;
-// import javafx.scene.layout.VBox;
-// import javafx.stage.Stage;
-// import org.example.model.Room;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import org.example.viewmodel.ViewMostBookedRoomTypesViewModel;
 
-// import java.util.HashMap;
-// import java.util.List;
-// import java.util.Map;
+import java.util.Map;
 
-// public class ViewMostBookedRoomTypesView {
-//     private final Stage stage;
-//     private final List<Room> rooms;
+public class ViewMostBookedRoomTypesView {
+    private final ViewMostBookedRoomTypesViewModel viewModel;
 
-//     public ViewMostBookedRoomTypesView(Stage stage, List<Room> rooms) {
-//         this.stage = stage;
-//         this.rooms = rooms;
-//     }
+    public ViewMostBookedRoomTypesView() {
+        this.viewModel = new ViewMostBookedRoomTypesViewModel();
+    }
 
-//     public void show() {
-//         Label titleLabel = new Label("Most Booked Room Types");
-//         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
+    public void show(Stage stage) {
+        stage.setTitle("Most Booked Room Types");
 
-//         ListView<String> roomTypeListView = new ListView<>();
+        PieChart pieChart = new PieChart();
+        final Map<String, Integer> roomTypeBookings = viewModel.getMostBookedRoomTypes();
 
-//         Button generateButton = new Button("Generate");
-//         generateButton.setOnAction(e -> {
-//             Map<String, Integer> roomTypeCount = new HashMap<>();
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+        roomTypeBookings.forEach((roomType, count) -> {
+            pieChartData.add(new PieChart.Data(roomType, count));
+        });
 
-//             for (Room room : rooms) {
-//                 if (room.getStatus().equals("Booked")) {
-//                     roomTypeCount.put(room.getRoomType(), roomTypeCount.getOrDefault(room.getRoomType(), 0) + 1);
-//                 }
-//             }
+        pieChart.setData(pieChartData);
+        pieChart.setTitle("Room Type Bookings");
 
-//             roomTypeListView.getItems().clear();
-//             roomTypeCount.forEach((type, count) -> roomTypeListView.getItems().add(type + ": " + count + " bookings"));
-//         });
+        Button refreshButton = new Button("Refresh");
+        refreshButton.setOnAction(e -> {
+            Map<String, Integer> updatedRoomTypeBookings = viewModel.getMostBookedRoomTypes();
+            pieChartData.clear();
+            updatedRoomTypeBookings.forEach((roomType, count) -> {
+                pieChartData.add(new PieChart.Data(roomType, count));
+            });
+        });
 
-//         Button backButton = new Button("Back");
-//         backButton.setOnAction(e -> new AdministratorMenuView(stage).show());
+        Button closeButton = new Button("Close");
+        closeButton.setOnAction(e -> stage.close());
 
-//         VBox layout = new VBox(10, titleLabel, generateButton, roomTypeListView, backButton);
-//         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+        VBox layout = new VBox(10, pieChart, refreshButton, closeButton);
+        layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
 
-//         Scene scene = stage.getScene();
-//         scene.setRoot(layout);
-//         stage.setTitle("Most Booked Room Types");
-//     }
-// }
+        Scene scene = new Scene(layout, 600, 500);
+        stage.setScene(scene);
+        stage.show();
+    }
+}

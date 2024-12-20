@@ -8,12 +8,12 @@ import org.example.enums.BookingStatus;
 
 import java.util.List;
 
-public class BookingViewModel {
+public class BookingListViewModel {
     private final BookingService bookingService;
     private final ObservableList<Booking> bookings;
     private final long guestId;
 
-    public BookingViewModel(long guestId) {
+    public BookingListViewModel(long guestId) {
         this.bookingService = new BookingService();
         this.bookings = FXCollections.observableArrayList();
         this.guestId = guestId;

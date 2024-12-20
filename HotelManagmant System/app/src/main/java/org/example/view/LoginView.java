@@ -53,13 +53,16 @@ public class LoginView {
                     System.out.println("Login successful for: " + email);
                     switch (authenticatedUser.getUserType()) {
                         case UserType.ADMINISTRATOR:
+                            new AdministratorMenuView(authenticatedUser.getId()).show(primaryStage);
                             break;
                         case UserType.RECEPTIONIST:
+                            new ReceptionistMenuView(authenticatedUser.getId()).show(primaryStage,authenticatedUser.getId());
                             break;
                         case UserType.GUEST:
                             new GuestMenuView().show(primaryStage,authenticatedUser.getId());
                             break;
                         case UserType.HOUSEKEEPING:
+                            new HousekeepingMenuView(authenticatedUser.getId()).show(primaryStage,authenticatedUser.getId());
                             break;
                         default:
                             throw new AssertionError();

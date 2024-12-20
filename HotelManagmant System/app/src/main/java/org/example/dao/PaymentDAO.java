@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 public class PaymentDAO {
+    
     public Payment getPaymentById(long paymentId){
         try(Session session = HibernateUtil.getSessionFactory().openSession()){
             return session.get(Payment.class, paymentId);

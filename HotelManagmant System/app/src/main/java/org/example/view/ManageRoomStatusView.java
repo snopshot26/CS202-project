@@ -1,58 +1,95 @@
-// package org.example.view;
+package org.example.view;
 
-// import javafx.scene.Scene;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.ComboBox;
-// import javafx.scene.control.Label;
-// import javafx.scene.control.ListView;
-// import javafx.scene.layout.VBox;
-// import javafx.stage.Stage;
-// import org.example.model.Room;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import org.example.enums.RoomStatus;
+import org.example.viewmodel.ManageRoomStatusViewModel;
 
-// import java.util.ArrayList;
-// import java.util.List;
+public class ManageRoomStatusView {
+    private final ManageRoomStatusViewModel viewModel;
 
-// public class ManageRoomStatusView {
-//     private final Stage stage;
-//     private final List<Room> rooms;
+    public ManageRoomStatusView() {
+        this.viewModel = new ManageRoomStatusViewModel();
+    }
 
-//     public ManageRoomStatusView(Stage stage) {
-//         this.stage = stage;
-//         this.rooms = new ArrayList<>(); // Replace with shared data source
-//     }
+    public void show(Stage stage, long adminId) {
+        stage.setTitle("Manage Room Status");
 
-//     public void show() {
-//         Label titleLabel = new Label("Manage Room Status");
-//         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(20));
+        grid.setVgap(10);
+        grid.setHgap(10);
 
-//         ListView<String> roomListView = new ListView<>();
-//         rooms.forEach(room -> roomListView.getItems().add(room.toString()));
+        Label hotelLabel = new Label("Select Hotel:");
+        ComboBox<String> hotelComboBox = new ComboBox<>();
+        ObservableList<String> hotelNames = FXCollections.observableArrayList(viewModel.getHotelNames());
+        hotelComboBox.setItems(hotelNames);
+        hotelComboBox.setPromptText("Choose Hotel");
 
-//         ComboBox<String> statusComboBox = new ComboBox<>();
-//         statusComboBox.getItems().addAll("Available", "Booked", "Maintenance", "Out of Service");
-//         statusComboBox.setPromptText("Select New Status");
+        Label roomNumberLabel = new Label("Select Room:");
+        ComboBox<String> roomNumberComboBox = new ComboBox<>();
+        roomNumberComboBox.setPromptText("Choose Room");
 
-//         Button updateButton = new Button("Update Status");
-//         updateButton.setOnAction(e -> {
-//             String selectedRoom = roomListView.getSelectionModel().getSelectedItem();
-//             String newStatus = statusComboBox.getValue();
+        Label statusLabel = new Label("Select Status:");
+        ComboBox<RoomStatus> statusComboBox = new ComboBox<>();
+        ObservableList<RoomStatus> roomStatuses = FXCollections.observableArrayList(viewModel.getRoomStatuses());
+        statusComboBox.setItems(roomStatuses);
+        statusComboBox.setPromptText("Choose Status");
 
-//             if (selectedRoom != null && newStatus != null) {
-//                 rooms.stream()
-//                         .filter(room -> room.toString().equals(selectedRoom))
-//                         .forEach(room -> room.setStatus(newStatus));
-//                 System.out.println("Updated room status to: " + newStatus);
-//             }
-//         });
+        Button updateButton = new Button("Update Status");
+        updateButton.setOnAction(e -> {
+            String hotelName = hotelComboBox.getValue();
+            String roomNumber = roomNumberComboBox.getValue();
+            RoomStatus status = statusComboBox.getValue();
 
-//         Button backButton = new Button("Back");
-//         backButton.setOnAction(e -> new AdministratorMenuView(stage).show());
+            if (hotelName == null || roomNumber == null || status == null) {
+                showAlert(Alert.AlertType.WARNING, "Incomplete Information", "Please select hotel, room, and status.");
+                return;
+            }
 
-//         VBox layout = new VBox(10, titleLabel, roomListView, statusComboBox, updateButton, backButton);
-//         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+            boolean success = viewModel.updateRoomStatus(hotelName, roomNumber, status);
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Room status updated successfully.");
+                new AdministratorMenuView(adminId).show(stage);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to update room status.");
+            }
+        });
 
-//         Scene scene = stage.getScene();
-//         scene.setRoot(layout);
-//         stage.setTitle("Manage Room Status");
-//     }
-// }
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(e -> new AdministratorMenuView(adminId).show(stage));
+
+        // Обновление номеров комнат при выборе отеля
+        hotelComboBox.setOnAction(e -> {
+            String hotelName = hotelComboBox.getValue();
+            ObservableList<String> roomNumbers = FXCollections.observableArrayList(viewModel.getRoomNumbersByHotel(hotelName));
+            roomNumberComboBox.setItems(roomNumbers);
+        });
+
+        grid.add(hotelLabel, 0, 0);
+        grid.add(hotelComboBox, 1, 0);
+        grid.add(roomNumberLabel, 0, 1);
+        grid.add(roomNumberComboBox, 1, 1);
+        grid.add(statusLabel, 0, 2);
+        grid.add(statusComboBox, 1, 2);
+        grid.add(updateButton, 0, 3);
+        grid.add(cancelButton, 1, 3);
+
+        Scene scene = new Scene(grid, 400, 250);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}

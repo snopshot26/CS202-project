@@ -6,6 +6,8 @@ import java.util.List;
 import org.example.config.HibernateUtil;
 import org.example.model.Room;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 public class RoomDAO {
     
@@ -58,6 +60,67 @@ public class RoomDAO {
                 .setParameter("hotelId", hotelId)
                 .setParameterList("occupiedRoomIds", occupiedRoomIds)
                 .list();
+        }
+    }
+
+    public Room getRoomByNumberAndHotel(String roomNumber, Long hotelId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM Room r WHERE r.roomNumber = :roomNumber AND r.hotel.id = :hotelId"; // Изменено 'hotelID' на 'id'
+            Query<Room> query = session.createQuery(hql, Room.class);
+            query.setParameter("roomNumber", roomNumber);
+            query.setParameter("hotelId", hotelId);
+            return query.uniqueResult();
+        }
+    }
+
+    public boolean addRoom(Room room) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.save(room);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateRoom(Room room) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.update(room);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteRoom(Long roomId) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            // Получаем объект Room по его ID
+            Room room = session.get(Room.class, roomId);
+            if (room == null) {
+                System.out.println("Комната с ID " + roomId + " не найдена.");
+                return false;
+            }
+
+            // Удаляем комнату
+            session.delete(room);
+
+            // Подтверждаем транзакцию
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback(); // Откатываем транзакцию в случае ошибки
+            }
+            e.printStackTrace();
+            return false;
         }
     }
 }

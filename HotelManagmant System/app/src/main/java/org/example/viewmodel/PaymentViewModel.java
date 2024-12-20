@@ -3,19 +3,16 @@ package org.example.viewmodel;
 import org.example.enums.BookingStatus;
 import org.example.enums.PaymentMethod;
 import org.example.enums.PaymentStatus;
-import org.example.model.Booking;
-import org.example.model.Hotel;
-import org.example.model.Payment;
-import org.example.model.Room;
-import org.example.model.Guest; // предполагается, что у вас есть класс Guest
+import org.example.model.*;
 import org.example.service.BookingService;
 import org.example.service.PaymentService;
 import org.example.service.UserService;
 
 import java.time.LocalDate;
 
+import org.example.enums.UserType;
+
 public class PaymentViewModel {
-    private final long guestId;
     private final Hotel hotel;
     private final Room room;
     private final LocalDate checkInDate;
@@ -25,21 +22,51 @@ public class PaymentViewModel {
     private final PaymentService paymentService;
     private final UserService userService;
 
-    public PaymentViewModel(long guestId, Hotel hotel, Room room, LocalDate checkInDate, LocalDate checkOutDate) {
-        this.guestId = guestId;
+    private final long userId; // Может быть guestId или receptionistId
+    private Guest guest; // Для гостя или создаваемого гостя
+    private boolean isReceptionist;
+
+    public PaymentViewModel(long userId, Hotel hotel, Room room, LocalDate checkInDate, LocalDate checkOutDate) {
+        this.bookingService = new BookingService();
+        this.paymentService = new PaymentService();
+        this.userService = new UserService();
+
+        this.userId = userId;
         this.hotel = hotel;
         this.room = room;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
-        this.bookingService = new BookingService();
-        this.paymentService = new PaymentService();
-        this.userService = new UserService();
+
+        initializeUser();
     }
+
+    private void initializeUser() {
+        User user = userService.getUser(userId);
+        if (user instanceof Guest) {
+            this.guest = (Guest) user;
+            this.isReceptionist = false;
+        } else if (user instanceof Receptionist) {
+            this.isReceptionist = true;
+        } else {
+            throw new IllegalArgumentException("Unsupported user type");
+        }
+    }
+
+
+    public Guest createGuest(String name, String email, String phoneNumber, String password) {
+        Guest newGuest = new Guest(name, email, phoneNumber, password, UserType.GUEST, 0); 
+        userService.addGuest(newGuest);
+        this.guest = newGuest;
+        return newGuest;
+    }
+
 
     public boolean proceedPayment(PaymentMethod method) {
         try {
-            // Находим гостя по guestId
-            Guest guest = (Guest) userService.getUser(guestId); // Или другой метод для получения гостя
+            // Если пользователь — ресепшионист, убедимся, что гостя создали
+            if (isReceptionist && guest == null) {
+                throw new IllegalStateException("Guest information is required for receptionist bookings.");
+            }
 
             // Определяем paymentStatus в зависимости от метода
             PaymentStatus paymentStatus;
@@ -57,15 +84,14 @@ public class PaymentViewModel {
 
             // Создаём бронирование
             Booking booking = new Booking(
-                hotel,
-                guest,
-                room,
-                checkInDate,
-                checkOutDate,
-                BookingStatus.CONFIRMED,
-                paymentStatus
+                    hotel,
+                    guest,
+                    room,
+                    checkInDate,
+                    checkOutDate,
+                    BookingStatus.CONFIRMED,
+                    paymentStatus
             );
-
             bookingService.addBooking(booking);
 
             // Создаём Payment
@@ -78,12 +104,14 @@ public class PaymentViewModel {
 
             paymentService.addPayment(payment);
 
-            
-
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean isReceptionist() {
+        return isReceptionist;
     }
 }

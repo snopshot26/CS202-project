@@ -6,6 +6,7 @@ import java.util.List;
 import org.example.config.HibernateUtil;
 import org.example.model.Hotel;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 public class HotelDAO {
     public Hotel getHotelById(long hotelId){
@@ -53,5 +54,13 @@ public class HotelDAO {
         }
     }
     
+    public Hotel getHotelByName(String hotelName) {
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            String hql = "FROM Hotel h WHERE h.name = :hotelName"; // Исправлено имя свойства
+            Query<Hotel> query = session.createQuery(hql, Hotel.class);
+            query.setParameter("hotelName", hotelName);
+            return query.uniqueResult();
+        }
+    }
 
 }

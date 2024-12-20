@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.example.dao.UserDAO;
 import org.example.factory.UserFactory;
+import org.example.model.Guest;
 import org.example.model.User;
 
 public class UserService {
@@ -26,7 +27,17 @@ public class UserService {
         return this.userDAO.getUserByEmailAndPassword(password, email);
     }
 
-    public void addUser(User user) {
-        this.userDAO.addUser(user);
+    public boolean addUser(User user) {
+        return this.userDAO.addUser(user);
     }
+
+    public void addGuest(Guest guest) {
+        userDAO.addGuest(guest);
+    }
+
+    public User getUserByEmail(String email) {
+        return userDAO.getUserByEmail(email);
+    }
+
+
 }

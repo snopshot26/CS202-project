@@ -1,39 +1,79 @@
-// package org.example.view;
+package org.example.view;
 
-// import javafx.scene.Scene;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.Label;
-// import javafx.scene.layout.VBox;
-// import javafx.stage.Stage;
+import org.example.viewmodel.AdministratorMenuViewModel;
 
-// public class AdministratorMenuView {
-//     private final Stage stage;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-//     public AdministratorMenuView(Stage stage) {
-//         this.stage = stage;
-//     }
+public class AdministratorMenuView {
 
-//     public void show() {
-//         Label titleLabel = new Label("Administrator Menu");
-//         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
+    private final AdministratorMenuViewModel viewModel;
 
-//         Button addRoomButton = new Button("Add Room");
-//         addRoomButton.setOnAction(e -> new AddRoomView(stage).show());
+    public AdministratorMenuView(long adminId) {
+        this.viewModel = new AdministratorMenuViewModel(adminId);
+    }
 
-//         Button deleteRoomButton = new Button("Delete Room");
-//         deleteRoomButton.setOnAction(e -> new DeleteRoomView(stage).show());
+    public void show(Stage stage) {
+        stage.setTitle("Administrator Menu");
 
-//         Button manageRoomButton = new Button("Manage Room Status");
-//         manageRoomButton.setOnAction(e -> new ManageRoomStatusView(stage).show());
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(20));
 
-//         Button backButton = new Button("Back to Login");
-//         backButton.setOnAction(e -> new LoginWindow().start(stage));
+        Button addRoomButton = new Button("Add Room");
+        addRoomButton.setOnAction(e -> {
+            AddRoomView addRoomView = new AddRoomView();
+            addRoomView.show(stage,viewModel.getAdminId());
+        });
 
-//         VBox layout = new VBox(10, titleLabel, addRoomButton, deleteRoomButton, manageRoomButton, backButton);
-//         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+        Button deleteRoomButton = new Button("Delete Room");
+        deleteRoomButton.setOnAction(e -> {
+            DeleteRoomView deleteRoomView = new DeleteRoomView(viewModel.getAdminId());
+            deleteRoomView.show(stage);
+        });
 
-//         Scene scene = stage.getScene();
-//         scene.setRoot(layout);
-//         stage.setTitle("Administrator Menu");
-//     }
-// }
+        Button manageRoomStatusButton = new Button("Manage Room Status");
+        manageRoomStatusButton.setOnAction(e -> {
+            ManageRoomStatusView manageRoomStatusView = new ManageRoomStatusView();
+            manageRoomStatusView.show(stage, viewModel.getAdminId());
+        });
+
+        // Добавьте другие кнопки меню администратора здесь
+
+        Button viewUserAccountsButton = new Button("View User Accounts");
+        viewUserAccountsButton.setOnAction(e -> {
+            ViewUserAccountsView viewUserAccountsView = new ViewUserAccountsView();
+            viewUserAccountsView.show(stage, viewModel.getAdminId());
+        });
+
+        // Кнопка выхода
+        Button logoutButton = new Button("Logout");
+        logoutButton.setOnAction(e -> {
+            // Логика выхода из системы
+            stage.close();
+        });
+
+        layout.getChildren().addAll(
+            addRoomButton,
+            deleteRoomButton,
+            manageRoomStatusButton,
+            viewUserAccountsButton,
+            logoutButton
+        );
+
+        Scene scene = new Scene(layout, 300, 400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}

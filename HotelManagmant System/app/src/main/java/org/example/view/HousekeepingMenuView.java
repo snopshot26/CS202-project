@@ -1,40 +1,61 @@
-// package org.example.view;
+package org.example.view;
 
-// import javafx.scene.Scene;
-// import javafx.scene.control.Button;
-// import javafx.scene.control.Label;
-// import javafx.scene.control.ListView;
-// import javafx.scene.layout.VBox;
-// import javafx.stage.Stage;
-// import org.example.model.Task;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-// import java.util.ArrayList;
-// import java.util.List;
+import org.example.viewmodel.HousekeeperRecordsViewModel;
 
-// public class HousekeepingMenuView {
-//     private final Stage stage;
-//     private final List<Task> tasks;
+public class HousekeepingMenuView {
 
-//     public HousekeepingMenuView(Stage stage) {
-//         this.stage = stage;
-//         this.tasks = new ArrayList<>(); // Replace with shared data source for tasks
-//     }
+    private final HousekeeperRecordsViewModel viewModel;
 
-//     public void show() {
-//         Label titleLabel = new Label("Housekeeping Menu");
-//         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;");
 
-//         Button viewTasksButton = new Button("View Tasks");
-//         viewTasksButton.setOnAction(e -> new ViewTasksView(stage, tasks).show());
+    public HousekeepingMenuView(long housekeeperId) {
+        this.viewModel = new HousekeeperRecordsViewModel(housekeeperId);
+    }
 
-//         Button backButton = new Button("Back to Administrator Menu");
-//         backButton.setOnAction(e -> new AdministratorMenuView(stage).show());
 
-//         VBox layout = new VBox(10, titleLabel, viewTasksButton, backButton);
-//         layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+    public void show(Stage stage,long housekeeperId) {
+        stage.setTitle("Housekeeping Menu");
 
-//         Scene scene = stage.getScene();
-//         scene.setRoot(layout);
-//         stage.setTitle("Housekeeping Menu");
-//     }
-// }
+        // Create buttons for each option
+        Button viewPendingTasksButton = new Button("View Pending Housekeeping Tasks");
+        Button viewCompletedTasksButton = new Button("View Completed Housekeeping Tasks");
+        Button updateTaskStatusButton = new Button("Update Task Status to Completed");
+        Button viewCleaningScheduleButton = new Button("View My Cleaning Schedule");
+
+        // Set button actions
+        viewPendingTasksButton.setOnAction(e -> {
+            ViewPendingTasksView pendingTasksView = new ViewPendingTasksView(housekeeperId);
+            pendingTasksView.show(stage);
+        });
+
+        viewCompletedTasksButton.setOnAction(e -> {
+            ViewCompletedTasksView completedTasksView = new ViewCompletedTasksView(housekeeperId);
+            completedTasksView.show(stage);
+        });
+
+        updateTaskStatusButton.setOnAction(e -> {
+            UpdateTaskStatusView updateTaskStatusView = new UpdateTaskStatusView(housekeeperId);
+            updateTaskStatusView.show(stage);
+        });
+
+        viewCleaningScheduleButton.setOnAction(e -> {
+            ViewCleaningScheduleView cleaningScheduleView = new ViewCleaningScheduleView(housekeeperId);
+            cleaningScheduleView.show(stage);
+        });
+
+        // Layout setup
+        VBox layout = new VBox(15, viewPendingTasksButton, viewCompletedTasksButton, updateTaskStatusButton, viewCleaningScheduleButton);
+        layout.setPadding(new Insets(20));
+        layout.setPrefWidth(300);
+
+        // Scene setup
+        Scene scene = new Scene(layout);
+        stage.setScene(scene);
+        stage.show();
+    }
+}

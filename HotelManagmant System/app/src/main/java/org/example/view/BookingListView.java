@@ -1,7 +1,7 @@
 package org.example.view;
 
 import org.example.model.Booking;
-import org.example.viewmodel.BookingViewModel;
+import org.example.viewmodel.BookingListViewModel;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,10 +11,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class BookingListView {
-    private final BookingViewModel viewModel;
+    private final BookingListViewModel viewModel;
 
     public BookingListView(long guestId) {
-        this.viewModel = new BookingViewModel(guestId);
+        this.viewModel = new BookingListViewModel(guestId);
     }
 
     public void show(Stage stage, long guestId) {

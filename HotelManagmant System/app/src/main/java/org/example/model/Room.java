@@ -19,7 +19,7 @@ public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="roomID")
-    private long Id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "hotelID", referencedColumnName = "hotelID")
@@ -53,11 +53,11 @@ public class Room {
 
 
     public long getId() {
-        return this.Id;
+        return this.id;
     }
 
     public void setId(long roomID) {
-        this.Id = roomID;
+        this.id = roomID;
     }
 
     public Hotel getHotel() {
@@ -98,6 +98,14 @@ public class Room {
 
     public void setStatus(RoomStatus status) {
         this.status = status;
+    }
+    @Override
+    public String toString() {
+        return "Room Number " + roomNumber +
+               " - Type: " + roomType +
+               " - Cost: $" + price +
+               " - Hotel: " + (hotel != null ? hotel.getName() : "N/A") +
+               " - Status: " + status;
     }
 }
 

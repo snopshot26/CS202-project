@@ -20,7 +20,7 @@
         <mapping class="org.example.model.Guest"/>
         <mapping class="org.example.model.Hotel"/>
         <mapping class="org.example.model.Housekeeping"/>
-        <mapping class="org.example.model.HousekeepingSchedule"/>
+        <mapping class="org.example.model.HousekeepingTask"/>
         <mapping class="org.example.model.Payment"/>
         <mapping class="org.example.model.Receptionist"/>
         <mapping class="org.example.model.Room"/>

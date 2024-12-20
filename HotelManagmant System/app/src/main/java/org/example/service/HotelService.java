@@ -20,4 +20,9 @@ public class HotelService {
     public List<Hotel> getAvailableHotels(LocalDate checkIn, LocalDate checkOut) {
         return this.HotelDAO.getAvailableHotels(checkIn, checkOut); 
     }
+
+    public Hotel getHotelByName(String hotelName) {
+        return this.HotelDAO.getHotelByName(hotelName);
+    }
+
 }

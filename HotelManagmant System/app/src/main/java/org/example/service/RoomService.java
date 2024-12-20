@@ -24,4 +24,17 @@ public class RoomService {
     public List<Room> getAvailableRooms(long hotelId, LocalDate checkIn, LocalDate checkOut) {
         return roomDAO.getAvailableRooms(hotelId, checkIn, checkOut);
     }
+
+    public boolean updateRoom(Room room) {
+        return roomDAO.updateRoom(room);
+    }
+
+    public void addRoom(Room room) {
+        roomDAO.addRoom(room);
+    }
+
+    public boolean  deleteRoom(long roomId) {
+        return roomDAO.deleteRoom(roomId);
+    }
+
 }

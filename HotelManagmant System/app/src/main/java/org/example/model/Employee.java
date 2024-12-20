@@ -20,7 +20,7 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employeeID")
-    private long Id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "hotelID", referencedColumnName = "hotelID")
@@ -53,11 +53,11 @@ public class Employee {
 
     // Getters and Setters
     public long getId() {
-        return this.Id;
+        return this.id;
     }
 
-    public void setEId(long employeeID) {
-        this.Id = employeeID;
+    public void setId(long employeeID) {
+        this.id = employeeID;
     }
 
     public Hotel getHotel() {

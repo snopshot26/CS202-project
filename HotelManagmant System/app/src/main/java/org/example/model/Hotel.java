@@ -13,10 +13,10 @@ public class Hotel {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "hotelID")
-    private long Id;
+    private long id;
 
     @Column(name = "hotelName", nullable=false, length=100)
-    private String Name;
+    private String name;
     
     @Column(name = "address", nullable=false, length = 255)
     private String address;
@@ -25,24 +25,24 @@ public class Hotel {
     }
 
     public Hotel(String name, String address) {
-        this.Name = name;
+        this.name = name;
         this.address = address;
     }
 
     public long getId(){
-        return this.Id;
+        return this.id;
     }
 
     public void setId(long Id){
-        this.Id = Id;
+        this.id = Id;
     }
 
     public String getName(){
-        return this.Name;
+        return this.name;
     }
 
     public void setName(String Name){
-        this.Name = Name;
+        this.name = Name;
     }
 
     public String getAddress(){

@@ -19,25 +19,33 @@ public class ReceptionistDAO {
         }
     }
 
-    public void addReceptionist(Receptionist receptionist) {
-        this.receptionistDAO.addReceptionist(receptionist);
+    public boolean addReceptionist(Receptionist receptionist) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.save(receptionist);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public void modifyReceptionist(Receptionist receptionist) {
-        this.receptionistDAO.updateReceptionist(receptionist);
+    public boolean deleteReceptionist(Long receptionistId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Receptionist receptionist = session.get(Receptionist.class, receptionistId);
+            if (receptionist == null) {
+                return false;
+            }
+            session.beginTransaction();
+            session.delete(receptionist);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public void deleteReceptionist(long receptionistId) {
-        this.receptionistDAO.deleteReceptionist(receptionistId);
-    }
-
-    public Receptionist getReceptionistById(long receptionistId) {
-        return this.receptionistDAO.getReceptionistById(receptionistId);
-    }
-
-    public List<Receptionist> getAllReceptionists() {
-        return this.receptionistDAO.getAllReceptionists();
-    }
-   
 }
 
